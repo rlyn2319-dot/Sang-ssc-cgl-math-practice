@@ -1,0 +1,86 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sang's SSC CGL Maths Mock</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:16px;background:#f4f0ff;color:#28233b;font:16px Arial,sans-serif}
+main{max-width:720px;margin:auto}
+.card{background:white;padding:22px;border-radius:18px;margin:14px 0;box-shadow:0 5px 20px #30205012}
+h1{text-align:center;font-size:28px}
+.sub{text-align:center;color:#726b83}
+button{font:inherit;border:0;border-radius:10px;padding:13px;cursor:pointer}
+.primary{background:#6c5ce7;color:white;width:100%;font-weight:bold}
+.option{background:white;border:1px solid #ddd5ef;text-align:left;width:100%;margin:5px 0;color:#28233b}
+.option.selected{background:#eee9ff;border:2px solid #6c5ce7}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.timer{font-weight:bold;background:#ffebe8;padding:10px;border-radius:10px}
+.bar{height:6px;background:#eee;border-radius:9px;margin:16px 0}
+#progress{height:6px;background:#6c5ce7;width:0;border-radius:9px}
+.hidden{display:none}
+.nav{display:flex;gap:8px;margin-top:16px}
+.nav button{flex:1;background:#eee9ff;color:#5142b5}
+.small{font-size:13px;color:#726b83}
+.review{border-top:1px solid #eee;padding:12px 0;line-height:1.5}
+.good{color:#168253}.bad{color:#bd3445}
+</style>
+</head>
+<body><main>
+<div class="card">
+<h1>🧠 Sang's Maths Mock</h1>
+<p class="sub">SSC CGL Quantitative Aptitude · 25 questions · 15 minutes</p>
+<p>Topics: Algebra, arithmetic, number system, geometry, mensuration, trigonometry and averages.</p>
+<p class="small">Original practice questions, not an official SSC paper. Try without a calculator.</p>
+<div id="intro"><button class="primary" onclick="start()">Start Practice</button></div>
+</div>
+<div class="card hidden" id="test">
+<div class="row"><b id="counter">Question 1 of 25</b><span class="timer" id="clock">15:00</span></div>
+<div class="bar"><div id="progress"></div></div>
+<h3 id="question"></h3><div id="options"></div>
+<p class="small" id="answered"></p>
+<div class="nav"><button id="prev" onclick="move(-1)">← Previous</button><button id="next" onclick="move(1)">Next →</button></div>
+<button class="primary" style="margin-top:14px" onclick="submitTest()">Submit Test</button>
+</div>
+<div class="card hidden" id="result"></div>
+</main>
+<script>
+const Q=[
+["If 3x − 7 = 20, find x.",["7","8","9","10"],2,"3x − 7 = 20, so 3x = 27 and x = 9."],
+["If x + 1/x = 5, find x² + 1/x².",["15","23","25","27"],1,"Squaring gives x² + 2 + 1/x² = 25. The answer is 23."],
+["Simplify (a + b)² − (a − b)².",["2ab","4ab","2a² + 2b²","a² − b²"],1,"Expanding and subtracting leaves 4ab."],
+["A price rises by 20%, then falls by 20%. What is the net change?",["No change","4% decrease","4% increase","8% decrease"],1,"100 × 1.2 × 0.8 = 96, so there is a 4% decrease."],
+["An item costs ₹800 and sells for ₹920. Find profit percentage.",["12%","15%","18%","20%"],1,"Profit = ₹120. (120/800) × 100 = 15%."],
+["Two numbers are in ratio 3:5 and sum to 64. Find the larger number.",["24","32","40","48"],2,"8 parts = 64, so each part is 8. Larger number = 5 × 8 = 40."],
+["The average of 6 numbers is 18. If 28 is removed, find the average of the other five.",["15","16","17","18"],1,"Total = 108. Remaining total = 80, so average = 80/5 = 16."],
+["A finishes a job in 12 days, B in 18 days. Together, how long?",["6 days","7.2 days","8 days","9 days"],1,"Daily work = 1/12 + 1/18 = 5/36. Time = 36/5 = 7.2 days."],
+["A 180 m train passes a pole in 12 seconds. Find speed.",["45 km/h","54 km/h","60 km/h","72 km/h"],1,"Speed = 180/12 = 15 m/s. 15 × 18/5 = 54 km/h."],
+["Find simple interest on ₹5,000 at 8% yearly for 3 years.",["₹800","₹1,000","₹1,200","₹1,400"],2,"SI = PRT/100 = 5000 × 8 × 3 / 100 = ₹1,200."],
+["Find the remainder when 7²⁵ is divided by 6.",["0","1","3","5"],1,"7 leaves remainder 1 when divided by 6, so 7²⁵ also leaves remainder 1."],
+["Which number is divisible by 9?",["4,572","5,431","6,124","7,205"],0,"The digits of 4,572 sum to 18, which is divisible by 9."],
+["Find the HCF of 84 and 126.",["14","21","28","42"],3,"84 = 2² × 3 × 7 and 126 = 2 × 3² × 7. HCF = 42."],
+["Find the roots of x² − 7x + 12 = 0.",["2 and 6","3 and 4","−3 and −4","1 and 12"],1,"Factorise: (x − 3)(x − 4) = 0. Roots are 3 and 4."],
+["Triangle angles are in ratio 2:3:4. Find the largest angle.",["40°","60°","80°","90°"],2,"9 parts = 180°, so one part is 20°. Largest = 4 × 20° = 80°."],
+["A circle's circumference is 44 cm. Find radius using π = 22/7.",["3.5 cm","7 cm","14 cm","21 cm"],1,"2πr = 44, so r = 7 cm."],
+["Find area of a triangle with base 16 cm and height 9 cm.",["64 cm²","72 cm²","80 cm²","144 cm²"],1,"Area = ½ × 16 × 9 = 72 cm²."],
+["Find the curved surface area of a cylinder with radius 7 cm and height 10 cm (π = 22/7).",["220 cm²","440 cm²","660 cm²","880 cm²"],1,"CSA = 2πrh = 2 × 22/7 × 7 × 10 = 440 cm²."],
+["If sin θ = 3/5 and θ is acute, find cos θ.",["2/5","3/4","4/5","5/4"],2,"Using a 3–4–5 triangle, adjacent/hypotenuse = 4/5."],
+["Evaluate tan 45° + cos 60°.",["1/2","1","3/2","2"],2,"tan 45° = 1 and cos 60° = 1/2. Sum = 3/2."],
+["Walk 30 m north, then 40 m east. How far from the start?",["35 m","50 m","60 m","70 m"],1,"Distance = √(30² + 40²) = √2500 = 50 m."],
+["Marked price is ₹1,500 with a 10% discount. Find selling price.",["₹1,250","₹1,300","₹1,350","₹1,400"],2,"Discount = ₹150. Selling price = ₹1,350."],
+["A sum doubles in 8 years at simple interest. When will it triple?",["12 years","16 years","20 years","24 years"],1,"Doubling means interest equals principal in 8 years. Twice that interest takes 16 years."],
+["A number increased by 25% becomes 250. Find the original number.",["180","200","220","225"],1,"1.25x = 250, so x = 200."],
+["Five students score 12, 15, 18, 10 and 20. Find their average.",["13","14","15","16"],2,"Total = 75. Average = 75/5 = 15."]
+];
+let idx=0,answers=Array(Q.length).fill(null),left=900,clock=null,done=false;
+function start(){document.getElementById("intro").classList.add("hidden");document.getElementById("test").classList.remove("hidden");render();clock=setInterval(()=>{left--;document.getElementById("clock").textContent=fmt(left);if(left<=0)finish(true)},1000)}
+function fmt(n){return String(Math.floor(Math.max(0,n)/60)).padStart(2,"0")+":"+String(Math.max(0,n)%60).padStart(2,"0")}
+function render(){let q=Q[idx];document.getElementById("counter").textContent=`Question ${idx+1} of ${Q.length}`;document.getElementById("progress").style.width=((idx+1)/Q.length*100)+"%";document.getElementById("question").textContent=q[0];let box=document.getElementById("options");box.innerHTML="";q[1].forEach((o,i)=>{let b=document.createElement("button");b.className="option"+(answers[idx]===i?" selected":"");b.style.display="block";b.innerHTML="<b>"+ "ABCD"[i]+". </b>"+o;b.onclick=()=>{answers[idx]=i;render()};box.appendChild(b)});document.getElementById("prev").disabled=idx===0;document.getElementById("next").disabled=idx===Q.length-1;document.getElementById("answered").textContent=answers.filter(a=>a!==null).length+" of 25 answered"}
+function move(d){idx=Math.max(0,Math.min(Q.length-1,idx+d));render()}
+function submitTest(){let n=answers.filter(a=>a!==null).length;if(n<Q.length&&!confirm(`You've answered ${n} of 25. Submit anyway?`))return;finish(false)}
+function finish(timeup){if(done)return;done=true;clearInterval(clock);document.getElementById("test").classList.add("hidden");let score=Q.reduce((s,q,i)=>s+(answers[i]===q[2]?1:0),0),percent=Math.round(score/Q.length*100),r=document.getElementById("result");r.classList.remove("hidden");r.innerHTML=`<h2>${percent>=80?"Excellent work! 🌟":percent>=60?"Good effort! 💪":"Keep practising! 📚"}</h2><p>${timeup?"Time is up.":"Test submitted."}</p><h2>${score}/25 · ${percent}%</h2><p>Time used: ${fmt(900-left)}</p><h3>Answer review</h3>`;Q.forEach((q,i)=>{let ok=answers[i]===q[2];let d=document.createElement("div");d.className="review";d.innerHTML=`<b>${i+1}. ${q[0]}</b><p class="${ok?"good":"bad"}">${answers[i]===null?"Not answered":ok?"Correct":"Your answer: "+q[1][answers[i]]}</p><p><b>Correct: ${"ABCD"[q[2]]}. ${q[1][q[2]]}</b></p><p>${q[3]}</p>`;r.appendChild(d)});let again=document.createElement("button");again.className="primary";again.textContent="Try Again";again.onclick=()=>location.reload();r.appendChild(again);window.scrollTo(0,0)}
+</script>
+</body>
+</html>
